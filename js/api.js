@@ -1,38 +1,31 @@
-import { renderHtml, renderCity } from './renderHtml.js';
+import { renderHtmlError, renderCity } from './renderHtml.js';
 
-const whereIam = (function() {
-	let instance;
-	function createGeoApi() {
-		return {
-			getGeoApi(cord_x, cord_y) {
-				fetch(`https://geocode.xyz/${cord_x},${cord_y}?geoit=json`)
-					.then((resp) => {
-						if (!resp.ok) throw new Error(`${resp.status}`);
-						return resp.json();
-					})
-					.then((data) => {
-						renderHtml(data.country);
-						return fetch(`https://restcountries.eu/rest/v2/name/${data.country}`);
-					})
-					.then((r) => {
-						if (!r.ok) throw new Error(`${r.status}`);
-						return r.json();
-					})
-					.then((data) => renderCity(data[0]))
-					.catch((e) => renderHtml(e.message, 'error'));
-			}
-		};
+
+const getPosition = function () {
+	return new Promise(function (resolve, reject) {
+		navigator.geolocation.getCurrentPosition(resolve, reject)
+	})
+}
+
+
+
+const whereIam = async function () {
+	try {
+		const position = await getPosition()
+		const { latitude, longitude } = position.coords;
+
+		const resolve = await fetch(`https://geocode.xyz/${latitude},${longitude}?json=1`)
+		const jsonR = await resolve.json();
+		if (!resolve.ok) throw new Error("something Wrong happened with geocode")
+
+		const city = await fetch(`https://restcountries.com/v3/name/${jsonR.country}`)
+		const resp = await city.json();
+		if (!resolve.ok) throw new Error("something Wrong happened with rest countries")
+		renderCity(resp[0]);
+
+	} catch (e) {
+		renderHtmlError(e)
 	}
-
-	return {
-		getInstance() {
-			if (!instance) {
-				instance = createGeoApi();
-			}
-
-			return instance;
-		}
-	};
-})();
+}
 
 export default whereIam;

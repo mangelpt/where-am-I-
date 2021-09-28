@@ -1,28 +1,31 @@
-function renderHtml(data, type = '') {
-	const container = document.querySelector('.message');
-	container.innerHTML = '';
-	if (type === 'error') {
-		container.insertAdjacentHTML('afterbegin', `<h2 class="message">something wrong error ${data}</h2>`);
-	} else {
-		container.insertAdjacentHTML('afterbegin', `<h2 class="message">you are in ${data}</h2>`);
-	}
+const countriesContainer = document.querySelector('.container');
+
+function renderHtmlError(data) {
+	countriesContainer.innerHTML = '';
+	countriesContainer.insertAdjacentHTML('afterbegin', `<h2 class="message"> 🗣️ ${data}</h2>`);
 }
 
-const renderCity = function(data) {
-	const countriesContainer = document.querySelector('.countries');
+const renderCity = function (data) {
 	countriesContainer.innerHTML = '';
 	const html = `
+	<div class="countries">  
     <article class="country ">
-    <div class="country__data">
-      <h3 class="country__name">${data.name}</h3>
-      <h4 class="country__region">${data.region}</h4>
-      <p class="country__row"><span>👫</span>${(+data.population / 1000000).toFixed(1)} people</p>
-      <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
-      <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
-    </div>
+       <div class="country__data">
+         <h3 class="country__name">${data.name.official}</h3>
+         <h4 class="country__region">${data.region}</h4>
+         <p class="country__row"><span>flag :</span>${data.flag}</p>
+         <p class="country__row"><span>🗣️</span>${data.languages.spa}</p>
+         <p class="country__row"><span>💰</span>${data.currencies.PEN.name}</p>
+        </div>
     </article>
+	</div>
+
+<h2 class="message">
+	you are in ${data.name.common}
+</h2>
+
     `;
 	countriesContainer.insertAdjacentHTML('beforeend', html);
 	countriesContainer.style.opacity = 1;
 };
-export { renderHtml, renderCity };
+export { renderHtmlError, renderCity };
